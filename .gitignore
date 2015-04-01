@@ -1,0 +1,7 @@
+.idea/
+*.log
+__pycache__/
+*.py[cod]
+*.so
+*.mo
+db.sqlite3

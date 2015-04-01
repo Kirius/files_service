@@ -1,0 +1,40 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>"File service"</title>
+    {% block css %}
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static "css/style.css" %}"/>
+    {% endblock css %}
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+           <div class="container">
+               <div class="navbar-header">
+                  <a class="navbar-brand" href="/">"File service"</a>
+               </div>
+               <div>
+                   <ul class="nav navbar-nav">
+                   </ul>
+                   {% if user.is_authenticated %}
+                       <ul class="nav navbar-nav navbar-right">
+                           <li><a class="logout" href="{% url 'logout' %}">"Logout"</a></li>
+                       </ul>
+                   {% endif %}
+               </div>
+           </div>
+        </nav>
+        {% block content %}
+        {% endblock content %}
+
+    </div>
+
+    {% block js %}
+        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    {% endblock js %}
+</body>
+</html>
