@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+    {% verbatim %}
+    <div ng-app="filesApp" ng-controller="FilesCtrl">
+        <div class="files-list row" ng-repeat="file in files">
+            <div>{{ file }}</div>
+        </div>
+
+        <div class="upload-form">
+            <div class="alert message"></div>
+            <div class="button" ng-file-select ng-model="upload_files">Upload using model $watch</div>
+        </div>
+    </div>
+    {% endverbatim %}
+
+
+{% endblock content %}
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'js/libs/angular.min.js' %}"></script>
+    <script src="{% static 'js/libs/angular-file-upload-shim.min.js' %}"></script>
+    <script src="{% static 'js/libs/angular-file-upload.min.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+{% endblock js %}
