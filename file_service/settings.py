@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'files'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,3 +89,5 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
 LOGIN_REDIRECT_URL = 'cabinet'
 LOGIN_URL = 'login'
+
+FILES_DIR = os.path.join(BASE_DIR, 'storage')

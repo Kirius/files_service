@@ -1,14 +1,9 @@
 # coding=utf-8
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from files.utils import json_response
+from .models import Files, UsersFiles
+from .utils import json_response, md5_for_file, save_file_to_disk
 from .forms import UploadFileForm
-
-
-def handle_uploaded_file(f):
-    with open('/home/kir/projects/learning/file_service/media/1.txt', 'wb+') as d:
-        for chunk in f.chunks():
-            d.write(chunk)
 
 
 @login_required
@@ -20,9 +15,27 @@ def cabinet(request):
 @login_required
 def files_list(request):
     if request.method == 'POST':
+        user = request.user
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            return {'name': 'name1'}
+            upload_file = request.FILES['file']
+            md5 = md5_for_file(upload_file)
+            try:
+                file = Files.objects.get(md5=md5)
+            except Files.DoesNotExist:
+                try:
+                    save_file_to_disk(md5, upload_file)
+                except Exception:
+                    return {'success': False, 'errors': 'Internal save error'}
+
+                file = Files.objects.create(
+                    md5=md5, size=upload_file.size, created_by=user)
+
+            UsersFiles.objects.create(
+                user=user, file=file, name=upload_file.name)
+
+            return {'success': True, 'name': upload_file.name}
+        else:
+            return {'success': False, 'errors': form.errors}
 
     return {'files': ['file1', 'file2', 'file3']}
