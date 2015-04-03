@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>File service</title>
     {% block css %}
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static "css/libs/bootstrap.min.css" %}"/>
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
     {% endblock css %}
 </head>
@@ -18,11 +18,14 @@
                   <a class="navbar-brand" href="/">File service</a>
                </div>
                <div>
-                   <ul class="nav navbar-nav">
-                   </ul>
                    {% if user.is_authenticated %}
                        <ul class="nav navbar-nav navbar-right">
-                           <li><a class="logout" href="{% url 'logout' %}">Logout</a></li>
+                           <li>
+                               <p class="navbar-text">Welcome, {{ user.username }}</p>
+                           </li>
+                           <li>
+                               <a class="logout" href="{% url 'logout' %}">Logout</a>
+                           </li>
                        </ul>
                    {% endif %}
                </div>

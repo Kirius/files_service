@@ -14,8 +14,13 @@ class Files(models.Model):
 class UsersFiles(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     file = models.ForeignKey(Files)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=50)
     added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'name')
+        ordering = ('-added',)
+
+    def to_dict(self):
+        return {'name': self.name,
+                'size': self.file.size}

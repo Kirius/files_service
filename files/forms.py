@@ -3,4 +3,4 @@ from django import forms
 
 
 class UploadFileForm(forms.Form):
-    file = forms.FileField(allow_empty_file=True, max_length=100)
+    file = forms.FileField(allow_empty_file=True, max_length=50)

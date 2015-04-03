@@ -6,41 +6,89 @@ app.config(function($httpProvider){
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
+app.filter('filesize', function(){
+    "use strict";
+    var units = ['bytes', 'KB', 'MB', 'GB'];
+
+    return function(bytes, precision) {
+        if (isNaN( parseFloat(bytes)) || !isFinite(bytes)){
+            return '?';
+        }
+        var unit = 0;
+        while ( bytes >= 1024 ) {
+            bytes /= 1024;
+            unit ++;
+        }
+        return bytes.toFixed(+precision) + ' ' + units[unit];
+    };
+});
+
+app.filter('pct', function(){
+    "use strict";
+    return function(num) {
+       return num + '%';
+    };
+});
+
 app.service('files', function($http, $upload){
     "use strict";
     return {
         get: function(){
             return $http.get('/files/');
         },
-        upload: function (files) {
-            if (files && files.length) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    $upload.upload({
-                        url: '/files/',
-//                        fields: {'username': $scope.username},
-                        file: file
-                    }).progress(function (evt) {
-                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                        console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                    }).success(function (data, status, headers, config) {
-                        console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-                    });
-                }
-            }
+        upload: function (file) {
+            return $upload.upload({
+                url: '/files/',
+                file: file
+            })
         }
     }
 });
 
 app.controller("FilesCtrl", function($scope, files){
     "use strict";
+
+    function findInArrayByProperty(array, name, value){
+        for (var i = 0; i < array.length; i++){
+            if (array[i][name] === value){
+                return array[i];
+            }
+        }
+    }
+
     files.get().then(function(response){
-        console.log(response.data);
         $scope.files = response.data.files;
     });
 
     $scope.$watch('upload_files', function () {
-        files.upload($scope.upload_files);
+        if (!$scope.upload_files) {
+            return;
+        }
+        if ($scope.upload_files.length > 5){
+            $scope.too_many_files = true;
+            $scope.upload_files = undefined;
+            return;
+        }
+        $scope.too_many_files = false;
+        angular.forEach($scope.upload_files, function(file){
+            file.progress = 0;
+            if (findInArrayByProperty($scope.files, 'name', file.name)){
+                file.error = 'You already have a file with such name';
+                return;
+            }
+            files.upload(file)
+            .progress(function(evt) {
+                file.progress = parseInt(100.0 * evt.loaded / evt.total);
+            }).success(function(data) {
+                if (data.success){
+                    file.msg = data.msg;
+                    $scope.files.unshift(data.file);
+                } else {
+                    file.error = data.error;
+                }
+
+            });
+        });
     });
 
 });

@@ -4,18 +4,51 @@
 
 {% block content %}
     {% verbatim %}
-    <div ng-app="filesApp" ng-controller="FilesCtrl">
-        <div class="files-list row" ng-repeat="file in files">
-            <div>{{ file }}</div>
+    <div ng-app="filesApp" ng-controller="FilesCtrl" ng-cloak>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <caption>Your files</caption>
+                <thead>
+                    <tr>
+                        <th>File name</th>
+                        <th>Size</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="file in files">
+                        <td>{{ file.name }}</td>
+                        <td>{{ file.size|filesize:1 }}</td>
+                        <td>
+                            <div class="pull-left">
+                                <a href="" class="btn btn-success btn-xs" target="_blank">Download</a>
+                                <a href="" class="btn btn-danger btn-xs">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="upload-form">
-            <div class="alert message"></div>
-            <div class="button" ng-file-select ng-model="upload_files">Upload using model $watch</div>
+        <button class="btn btn-info btn-lg upload" ng-file-select ng-model="upload_files" ng-multiple="true">
+            Upload file(s)
+        </button>
+        <div class="alert alert-danger" ng-show="too_many_files">Yoy can upload at most 5 files at a time</div>
+
+        <div class="row" ng-show="upload_files">
+            <h4 class="col-md-12">Upload status:</h4>
         </div>
+        <div class="row" ng-repeat="file in upload_files">
+            <div class="col-md-4">{{ file.name }}</div>
+            <div class="col-md-1">{{ file.progress|pct }}</div>
+            <div class="col-md-7">
+                <span ng-show="file.msg" class="upload-msg">{{ file.msg }}</span>
+                <span ng-show="file.error" class="upload-error">{{ file.error }}</span>
+            </div>
+        </div>
+
     </div>
     {% endverbatim %}
-
 
 {% endblock content %}
 {% block js %}

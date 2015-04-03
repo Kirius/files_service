@@ -13,8 +13,8 @@ def json_response(view):
     """
     def _f(*args, **kwargs):
         res = view(*args, **kwargs)
-        # if 'success' not in res:
-        #     res['success'] = True
+        if 'success' not in res:
+            res['success'] = True
 
         return HttpResponse(json.dumps(res), content_type='application/json')
 
