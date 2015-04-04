@@ -2,6 +2,11 @@
 {% load staticfiles %}
 {% load i18n %}
 
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "css/libs/toaster.min.css" %}"/>
+{% endblock css %}
+
 {% block content %}
     {% verbatim %}
     <div ng-app="filesApp" ng-controller="FilesCtrl" ng-cloak>
@@ -33,20 +38,22 @@
         <button class="btn btn-info btn-lg upload" ng-file-select ng-model="upload_files" ng-multiple="true">
             Upload file(s)
         </button>
-        <div class="alert alert-danger" ng-show="too_many_files">Yoy can upload at most 5 files at a time</div>
 
-        <div class="row" ng-show="upload_files">
-            <h4 class="col-md-12">Upload status:</h4>
-        </div>
-        <div class="row" ng-repeat="file in upload_files">
-            <div class="col-md-4">{{ file.name }}</div>
-            <div class="col-md-1">{{ file.progress|pct }}</div>
-            <div class="col-md-7">
-                <span ng-show="file.msg" class="upload-msg">{{ file.msg }}</span>
-                <span ng-show="file.error" class="upload-error">{{ file.error }}</span>
+        <div ng-hide="hide_upload_files">
+            <div class="row" ng-show="upload_files">
+                <h4 class="col-md-12">Upload status:</h4>
+            </div>
+            <div class="row" ng-repeat="file in upload_files">
+                <div class="col-md-4">{{ file.name }}</div>
+                <div class="col-md-1">{{ file.progress|pct }}</div>
+                <div class="col-md-7">
+                    <span ng-show="file.msg" class="upload-msg">{{ file.msg }}</span>
+                    <span ng-show="file.error" class="upload-error">{{ file.error }}</span>
+                </div>
             </div>
         </div>
 
+        <toaster-container></toaster-container>
     </div>
     {% endverbatim %}
 
@@ -54,7 +61,10 @@
 {% block js %}
     {{ block.super }}
     <script src="{% static 'js/libs/angular.min.js' %}"></script>
+    <script src="{% static 'js/libs/angular-animate.min.js' %}"></script>
     <script src="{% static 'js/libs/angular-file-upload-shim.min.js' %}"></script>
     <script src="{% static 'js/libs/angular-file-upload.min.js' %}"></script>
+    <script src="{% static 'js/libs/toaster.min.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/files/files.js' %}"></script>
 {% endblock js %}
