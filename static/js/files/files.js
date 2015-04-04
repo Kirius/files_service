@@ -94,6 +94,7 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
                     $scope.files.unshift(data.file);
                 })
                 .error(function(data){
+                    file.progress = 100;
                     file.error = data.error || 'Unknown error!';
                 });
         });

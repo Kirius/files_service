@@ -1,11 +1,15 @@
 # coding=utf-8
+import mimetypes
+import os
+
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
+from django.utils.http import urlencode
 from django.views.generic import View, TemplateView
 
 from .models import Files, UsersFiles
 from .forms import UploadFileForm
-from .utils import LoginRequiredMixin
+from .utils import LoginRequiredMixin, get_file_path
 from .statuses import *
 
 
@@ -69,3 +73,20 @@ class FilesDetail(LoginRequiredMixin, View):
         else:
             data = {'error': 'Invalid request'}
             return JsonResponse(data, status=HTTP_BAD_REQUEST_400)
+
+
+class ServeFile(View):
+    def get(self, request, md5):
+        name = request.GET.get('name')
+        if not (settings.DEBUG and name):
+            raise Http404()
+
+        file_path = get_file_path(md5)
+        statobj = os.stat(file_path)
+        content_type = 'application/octet-stream'
+        response = FileResponse(open(file_path, 'rb'),
+                                content_type=content_type)
+        response["Content-Length"] = statobj.st_size
+        content_disposition = u"attachment; %s" % urlencode({'filename': name})
+        response['Content-Disposition'] = content_disposition
+        return response

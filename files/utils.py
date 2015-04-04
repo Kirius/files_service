@@ -1,9 +1,14 @@
 # coding=utf-8
 import os
 import hashlib
+
 from django.conf import settings
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+
+
+def get_file_path(md5):
+    return os.path.join(settings.FILES_DIR, md5)
 
 
 def md5_for_file(file):
@@ -22,8 +27,7 @@ def save_file_to_disk(md5, file):
     md5: md5 checksum for a file.
     file: instance of django django.core.files.uploadedfile.UploadedFile
     """
-    file_name = os.path.join(settings.FILES_DIR, md5)
-    with open(file_name, 'wb') as out_file:
+    with open(get_file_path(md5), 'wb') as out_file:
         for chunk in file.chunks():
             out_file.write(chunk)
 

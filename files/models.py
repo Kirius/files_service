@@ -1,10 +1,10 @@
 # coding=utf-8
 import os
 from django.conf import settings
-from django.db import models
-from django.db import IntegrityError
+from django.db import models, IntegrityError
+from django.core.urlresolvers import reverse
 
-from files.utils import md5_for_file, save_file_to_disk
+from .utils import md5_for_file, save_file_to_disk, get_file_path
 from .statuses import *
 
 
@@ -55,7 +55,7 @@ class FilesManager(models.Manager):
 
         file = user_file.file
         if UsersFiles.objects.filter(file=file).count() == 1:
-            file_name = os.path.join(settings.FILES_DIR, file.md5)
+            file_name = get_file_path(file.md5)
             os.remove(file_name)
             user_file.delete()
             file.delete()
@@ -87,8 +87,15 @@ class UsersFiles(models.Model):
         unique_together = ('user', 'name')
         ordering = ('-added',)
 
+    def get_absolute_url(self):
+        return (
+            u'%s?name=%s' %
+            (reverse('serve_file', kwargs={'md5': self.file.md5}), self.name)
+        )
+
     def to_dict(self):
         return {'id': self.id,
                 'name': self.name,
                 'size': self.file.size,
-                'added': self.added}
+                'added': self.added,
+                'url': self.get_absolute_url()}

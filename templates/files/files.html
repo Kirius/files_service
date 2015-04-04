@@ -28,7 +28,7 @@
                         <td>{{ file.added|date }}</td>
                         <td>
                             <div class="pull-left">
-                                <a href="" class="btn btn-success btn-xs" target="_blank">Download</a>
+                                <a ng-href="{{ file.url }}" class="btn btn-success btn-xs" target="_blank">Download</a>
                                 <button ng-click="deleteFile(file, $index)" class="btn btn-danger btn-xs">Delete</button>
                             </div>
                         </td>
