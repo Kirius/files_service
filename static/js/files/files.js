@@ -85,9 +85,11 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
             }
             files.upload(file)
                 .progress(function(evt) {
-                    file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                    var pct = Math.min(parseInt(100.0 * evt.loaded / evt.total), 99);
+                    file.progress = pct;
                 })
                 .success(function(data) {
+                    file.progress = 100;
                     file.msg = data.msg;
                     $scope.files.unshift(data.file);
                 })
@@ -99,6 +101,9 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
 
     $scope.deleteFile = function(file, idx){
         $scope.upload_files = undefined;
+        if (!confirm("Do you want to delete '" + file.name + "' file?")) {
+            return;
+        }
         files.delete(file.id).then(
             function(){
                 $scope.files.splice(idx, 1);
