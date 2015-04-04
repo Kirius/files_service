@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 from django.conf import settings
 from django.db import models
 from django.db import IntegrityError
@@ -36,6 +37,32 @@ class FilesManager(models.Manager):
             return FILE_EXIST
         except IntegrityError:
             return DUPLICATE_NAME
+
+    def delete_file(self, user_file_id, user):
+        """
+        Deletes file link from user. If user the only owner of the file,
+        then also deletes file from storage
+        return: True if file deleted successfully
+                False if file was not deleted
+        """
+        try:
+            user_file = (
+                UsersFiles.objects.select_related('file')
+                .get(id=user_file_id, user=user)
+            )
+        except UsersFiles.DoesNotExist:
+            return False
+
+        file = user_file.file
+        if UsersFiles.objects.filter(file=file).count() == 1:
+            file_name = os.path.join(settings.FILES_DIR, file.md5)
+            os.remove(file_name)
+            user_file.delete()
+            file.delete()
+        else:
+            user_file.delete()
+
+        return True
 
 
 class Files(models.Model):

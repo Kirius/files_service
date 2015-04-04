@@ -34,13 +34,16 @@ app.service('files', function($http, $upload){
     "use strict";
     return {
         get: function(){
-            return $http.get('/files/');
+            return $http.get('/files');
         },
         upload: function (file) {
             return $upload.upload({
-                url: '/files/',
+                url: '/files',
                 file: file
             })
+        },
+        delete: function(id){
+            return $http.delete('/files/' + id)
         }
     }
 });
@@ -94,5 +97,17 @@ app.controller("FilesCtrl", function($scope, files){
                 });
         });
     });
+
+    $scope.deleteFile = function(file, idx){
+        files.delete(file.id).then(
+            function(response){
+                $scope.files.splice(idx, 1);
+                // Notify file deleted
+            },
+            function(){
+                // Notify unknown error
+            }
+        );
+    }
 
 });

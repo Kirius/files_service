@@ -2,11 +2,13 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.static import serve
+from files.views import FilesList, FilesDetail, cabinet
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'files.views.cabinet', name='cabinet'),
+    url(r'^$', cabinet, name='cabinet'),
+    url(r'^files$', FilesList.as_view(), name='files_list'),
+    url(r'^files/(?P<id>\d+)$', FilesDetail.as_view(), name='files_detail'),
     url(r'^auth/', include('auth.urls')),
-    url(r'^files/', include('files.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(admin.site.urls)),
 )
