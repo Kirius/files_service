@@ -101,4 +101,4 @@ LOGIN_URL = 'login'
 
 FILES_DIR = os.path.join(BASE_DIR, 'storage')
 
-MAX_FILES_PER_USER = 100
+MAX_FILES_PER_USER = 5

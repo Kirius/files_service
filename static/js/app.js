@@ -56,9 +56,14 @@ app.controller("FilesCtrl", function($scope, files){
         }
     }
 
-    files.get().then(function(response){
-        $scope.files = response.data.files;
-    });
+    files.get().then(
+        function(response){
+            $scope.files = response.data.files;
+        },
+        function(){
+            // Notify unknown error
+        }
+    );
 
     $scope.$watch('upload_files', function () {
         if (!$scope.upload_files) {
@@ -77,17 +82,16 @@ app.controller("FilesCtrl", function($scope, files){
                 return;
             }
             files.upload(file)
-            .progress(function(evt) {
-                file.progress = parseInt(100.0 * evt.loaded / evt.total);
-            }).success(function(data) {
-                if (data.success){
+                .progress(function(evt) {
+                    file.progress = parseInt(100.0 * evt.loaded / evt.total);
+                })
+                .success(function(data) {
                     file.msg = data.msg;
                     $scope.files.unshift(data.file);
-                } else {
-                    file.error = data.error;
-                }
-
-            });
+                })
+                .error(function(data){
+                    file.error = data.error || 'Unknown error!';
+                });
         });
     });
 
