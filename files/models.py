@@ -90,4 +90,5 @@ class UsersFiles(models.Model):
     def to_dict(self):
         return {'id': self.id,
                 'name': self.name,
-                'size': self.file.size}
+                'size': self.file.size,
+                'added': self.added}

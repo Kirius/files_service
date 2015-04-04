@@ -24,6 +24,13 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
     };
 })
 
+.filter('date', function(){
+    return function(iso_string) {
+       var date = new Date(iso_string);
+        return date.toString();
+    };
+})
+
 .service('files', function($http, $upload){
     return {
         get: function(){

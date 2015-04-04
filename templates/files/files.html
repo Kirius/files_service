@@ -17,6 +17,7 @@
                     <tr>
                         <th>File name</th>
                         <th>Size</th>
+                        <th>Added</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -24,6 +25,7 @@
                     <tr ng-repeat="file in files">
                         <td>{{ file.name }}</td>
                         <td>{{ file.size|filesize:1 }}</td>
+                        <td>{{ file.added|date }}</td>
                         <td>
                             <div class="pull-left">
                                 <a href="" class="btn btn-success btn-xs" target="_blank">Download</a>
