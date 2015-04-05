@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('md5', models.CharField(unique=True, max_length=32)),
                 ('size', models.PositiveIntegerField()),
+                ('creation_name', models.CharField(max_length=50)),
                 ('created_by', models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
             options={

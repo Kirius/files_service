@@ -45,8 +45,11 @@ class FilesList(LoginRequiredMixin, View):
             if status == FILE_CREATED:
                 msg = 'Upload successful (new file created)'
             elif status == FILE_EXIST:
-                msg = ('Upload successful (file already existed at: %s)'
-                       % file.created_by.username)
+                msg = (
+                    'Upload successful (file was initially '
+                    'created by: "%s" with name: "%s"'
+                    % (file.created_by.username, file.creation_name)
+                )
             else:
                 data = {'error': 'You already have a file with such name'}
                 return JsonResponse(data, HTTP_BAD_REQUEST_400)

@@ -67,6 +67,8 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
         }
     );
 
+    $scope.uploading = 0;
+
     $scope.$watch('upload_files', function () {
         $scope.hide_upload_files = false;
         if (!$scope.upload_files) {
@@ -83,6 +85,7 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
                 file.error = 'You already have a file with such name';
                 return;
             }
+            $scope.uploading++;
             files.upload(file)
                 .progress(function(evt) {
                     var pct = Math.min(parseInt(100.0 * evt.loaded / evt.total), 99);
@@ -92,16 +95,17 @@ angular.module('filesApp.files', ['angularFileUpload', 'toaster'])
                     file.progress = 100;
                     file.msg = data.msg;
                     $scope.files.unshift(data.file);
+                    $scope.uploading--;
                 })
                 .error(function(data){
                     file.progress = 100;
                     file.error = data.error || 'Unknown error!';
+                    $scope.uploading--;
                 });
         });
     });
 
     $scope.deleteFile = function(file, idx){
-        $scope.upload_files = undefined;
         if (!confirm("Do you want to delete '" + file.name + "' file?")) {
             return;
         }

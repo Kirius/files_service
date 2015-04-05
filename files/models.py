@@ -25,8 +25,8 @@ class FilesManager(models.Manager):
                 file_rec = self.get(md5=md5)
                 status = self._add_to_user(user, file_rec, file.name)
             except self.model.DoesNotExist:
-                file_rec = self.create(md5=md5, size=file.size,
-                                       created_by=user)
+                file_rec = self.create(md5=md5, created_by=user,
+                                       creation_name=file.name, size=file.size)
                 self._add_to_user(user, file_rec, file.name)
                 save_file_to_disk(md5, file)
                 status = FILE_CREATED
@@ -72,6 +72,7 @@ class Files(models.Model):
     md5 = models.CharField(max_length=32, unique=True)
     size = models.PositiveIntegerField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+')
+    creation_name = models.CharField(max_length=50)
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, through='UsersFiles', related_name='files')
     objects = FilesManager()

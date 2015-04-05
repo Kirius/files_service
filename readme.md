@@ -20,3 +20,8 @@ pip install -r requirements.txt
 
 ### Do migrations:
 ./manage.py migrate
+
+### Create files dir
+mkdir storage
+
+
