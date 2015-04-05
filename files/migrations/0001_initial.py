@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             name='UsersFiles',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
+                ('name', models.CharField(max_length=50)),
                 ('added', models.DateTimeField(auto_now_add=True)),
                 ('file', models.ForeignKey(to='files.Files')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),

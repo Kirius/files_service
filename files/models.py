@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 from django.conf import settings
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 from django.core.urlresolvers import reverse
 
 from .utils import md5_for_file, save_file_to_disk, get_file_path
@@ -20,14 +20,16 @@ class FilesManager(models.Manager):
         returns: tuple of (Files model instance, status)
         """
         md5 = md5_for_file(file)
-        try:
-            file_rec = self.get(md5=md5)
-            status = self._add_to_user(user, file_rec, file.name)
-        except self.model.DoesNotExist:
-            status = FILE_CREATED
-            save_file_to_disk(md5, file)
-            file_rec = self.create(md5=md5, size=file.size, created_by=user)
-            self._add_to_user(user, file_rec, file.name)
+        with transaction.atomic():
+            try:
+                file_rec = self.get(md5=md5)
+                status = self._add_to_user(user, file_rec, file.name)
+            except self.model.DoesNotExist:
+                file_rec = self.create(md5=md5, size=file.size,
+                                       created_by=user)
+                self._add_to_user(user, file_rec, file.name)
+                save_file_to_disk(md5, file)
+                status = FILE_CREATED
 
         return file_rec, status
 
@@ -45,22 +47,23 @@ class FilesManager(models.Manager):
         return: True if file deleted successfully
                 False if file was not deleted
         """
-        try:
-            user_file = (
-                UsersFiles.objects.select_related('file')
-                .get(id=user_file_id, user=user)
-            )
-        except UsersFiles.DoesNotExist:
-            return False
+        with transaction.atomic():
+            try:
+                user_file = (
+                    UsersFiles.objects.select_related('file')
+                    .get(id=user_file_id, user=user)
+                )
+            except UsersFiles.DoesNotExist:
+                return False
 
-        file = user_file.file
-        if UsersFiles.objects.filter(file=file).count() == 1:
-            file_name = get_file_path(file.md5)
-            os.remove(file_name)
-            user_file.delete()
-            file.delete()
-        else:
-            user_file.delete()
+            file = user_file.file
+            if UsersFiles.objects.filter(file=file).count() == 1:
+                user_file.delete()
+                file.delete()
+                file_name = get_file_path(file.md5)
+                os.remove(file_name)
+            else:
+                user_file.delete()
 
         return True
 

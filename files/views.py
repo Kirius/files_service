@@ -39,7 +39,7 @@ class FilesList(LoginRequiredMixin, View):
             try:
                 file, status = Files.objects.create_file(upload_file, user)
             except Exception:
-                data = {'error': 'Internal storage error'}
+                data = {'error': 'File was not added. Please try again'}
                 return JsonResponse(data, status=HTTP_SERVER_ERROR_500)
 
             if status == FILE_CREATED:
@@ -65,7 +65,7 @@ class FilesDetail(LoginRequiredMixin, View):
         try:
             deleted = Files.objects.delete_file(id, request.user)
         except Exception:
-            data = {'error': 'Internal storage error'}
+            data = {'error': 'File was not deleted. Please try again'}
             return JsonResponse(data, status=HTTP_SERVER_ERROR_500)
 
         if deleted:
