@@ -8,7 +8,8 @@ urlpatterns = patterns(
     url(r'^$', Cabinet.as_view(), name='cabinet'),
     url(r'^files$', FilesList.as_view(), name='files_list'),
     url(r'^files/(?P<id>\d+)$', FilesDetail.as_view(), name='files_detail'),
-    url(r'^s/(?P<md5>[a-f\d]{32})$', ServeFile.as_view(), name='serve_file'),
+    url(r'^s/(?P<md5>[a-f\d]{32})/(?P<name>.*)$', ServeFile.as_view(),
+        name='serve_file'),
     url(r'^auth/', include('auth.urls')),
     # url(r'^admin/', include(admin.site.urls)),
 )

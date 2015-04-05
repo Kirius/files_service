@@ -76,9 +76,8 @@ class FilesDetail(LoginRequiredMixin, View):
 
 
 class ServeFile(View):
-    def get(self, request, md5):
-        name = request.GET.get('name')
-        if not (settings.DEBUG and name):
+    def get(self, request, md5, name):
+        if not settings.DEBUG:
             raise Http404()
 
         file_path = get_file_path(md5)
@@ -86,7 +85,6 @@ class ServeFile(View):
         content_type = 'application/octet-stream'
         response = FileResponse(open(file_path, 'rb'),
                                 content_type=content_type)
+
         response["Content-Length"] = statobj.st_size
-        content_disposition = u"attachment; %s" % urlencode({'filename': name})
-        response['Content-Disposition'] = content_disposition
         return response

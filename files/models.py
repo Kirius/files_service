@@ -88,10 +88,8 @@ class UsersFiles(models.Model):
         ordering = ('-added',)
 
     def get_absolute_url(self):
-        return (
-            u'%s?name=%s' %
-            (reverse('serve_file', kwargs={'md5': self.file.md5}), self.name)
-        )
+        return reverse('serve_file', kwargs={'md5': self.file.md5,
+                                             'name': self.name})
 
     def to_dict(self):
         return {'id': self.id,
