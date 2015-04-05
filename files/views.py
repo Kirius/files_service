@@ -1,10 +1,8 @@
 # coding=utf-8
-import mimetypes
 import os
 
 from django.conf import settings
 from django.http import JsonResponse, FileResponse, Http404
-from django.utils.http import urlencode
 from django.views.generic import View, TemplateView
 
 from .models import Files, UsersFiles
@@ -79,6 +77,9 @@ class FilesDetail(LoginRequiredMixin, View):
 
 
 class ServeFile(View):
+    """
+    View which serves files in debug mode (useful for development)
+    """
     def get(self, request, md5, name):
         if not settings.DEBUG:
             raise Http404()

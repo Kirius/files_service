@@ -46,6 +46,9 @@ def login_forbidden(view):
 
 
 class LoginRequiredMixin(object):
+    """
+    Mixin for CBV to allow only logged in users
+    """
     @classmethod
     def as_view(cls, **initkwargs):
         view = super(LoginRequiredMixin, cls).as_view(**initkwargs)

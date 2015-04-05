@@ -23,8 +23,10 @@ class FilesManager(models.Manager):
         with transaction.atomic():
             try:
                 file_rec = self.get(md5=md5)
+                # file already exists
                 status = self._add_to_user(user, file_rec, file.name)
             except self.model.DoesNotExist:
+                # file does not exist
                 file_rec = self.create(md5=md5, created_by=user,
                                        creation_name=file.name, size=file.size)
                 self._add_to_user(user, file_rec, file.name)
@@ -58,11 +60,13 @@ class FilesManager(models.Manager):
 
             file = user_file.file
             if UsersFiles.objects.filter(file=file).count() == 1:
+                # user is the only owner of a file
                 user_file.delete()
                 file.delete()
                 file_name = get_file_path(file.md5)
                 os.remove(file_name)
             else:
+                # there are more than 1 owner of a file
                 user_file.delete()
 
         return True
